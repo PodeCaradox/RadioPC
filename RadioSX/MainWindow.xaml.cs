@@ -165,6 +165,13 @@ namespace RadioSX
 
         private void AddRadio_Click(object sender, RoutedEventArgs e)
         {
+            AddRadioStream addRadioStream = new AddRadioStream();
+            addRadioStream.DataContext = this.DataContext;
+            addRadioStream.ShowDialog();
+            if (!String.IsNullOrEmpty(_vm.NewRadioName) && !String.IsNullOrEmpty(_vm.NewRadioURL))
+            {
+                _vm.AddNewRadio();
+            }
 
         }
     }

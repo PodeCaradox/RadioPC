@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,7 +47,29 @@ namespace RadioSX.ViewModel
                 RaisePropertyChanged("SelectedSong");
             }
         }
-       
+
+        private String newRadioURL;
+        public String NewRadioURL
+        {
+            get { return newRadioURL; }
+            set
+            {
+                newRadioURL = value;
+                RaisePropertyChanged("NewRadioURL");
+            }
+        }
+
+        private String newRadioName;
+        public String NewRadioName
+        {
+            get { return newRadioName; }
+            set
+            {
+                newRadioName = value;
+                RaisePropertyChanged("NewRadioName");
+            }
+        }
+
         private DownloadRadioStream downloadRadioStream;
 
         public DownloadRadioStream ActualRadioStream
@@ -72,13 +96,39 @@ namespace RadioSX.ViewModel
         }
         public void LoadRadioStreams()
         {
+            String list="";
+            if (File.Exists("Radios\\Radios.txt"))
+            {
+
+                list = File.ReadAllText("Radios\\Radios.txt");
+
+
+            }
+       
             radioStreams = new ObservableCollection<DownloadRadioStream>();
-            radioStreams.Add(new DownloadRadioStream("https://de-hz-fal-stream02.rautemusik.fm/charthits", "Chart Hits"));
-            radioStreams.Add(new DownloadRadioStream("http://de-hz-fal-stream01.rautemusik.fm/top40", "Top 40"));
-            radioStreams.Add(new DownloadRadioStream("http://main-high.rautemusik.fm/stream.mp3?ref=rmpage", "Main"));
-            radioStreams.Add(new DownloadRadioStream("http://breakz-high.rautemusik.fm/stream.mp3?ref=rmpage", "BreakZ.FM"));
-            radioStreams.Add(new DownloadRadioStream("http://weihnachten-high.rautemusik.fm/stream.mp3?ref=rmpage", "Weinachten"));
-            radioStreams.Add(new DownloadRadioStream("http://lw3.mp3.tb-group.fm/tb.mp3", "Technobase.fm"));
+            if (String.IsNullOrEmpty(list))
+            {
+                radioStreams.Add(new DownloadRadioStream("https://de-hz-fal-stream02.rautemusik.fm/charthits", "Chart Hits"));
+                radioStreams.Add(new DownloadRadioStream("http://de-hz-fal-stream01.rautemusik.fm/top40", "Top 40"));
+                radioStreams.Add(new DownloadRadioStream("http://main-high.rautemusik.fm/stream.mp3?ref=rmpage", "Main"));
+                radioStreams.Add(new DownloadRadioStream("http://breakz-high.rautemusik.fm/stream.mp3?ref=rmpage", "BreakZ.FM"));
+                radioStreams.Add(new DownloadRadioStream("http://weihnachten-high.rautemusik.fm/stream.mp3?ref=rmpage", "Weinachten"));
+                radioStreams.Add(new DownloadRadioStream("http://lw3.mp3.tb-group.fm/tb.mp3", "Technobase.fm"));
+
+            }
+            else
+            {
+                var items = list.Split(';');
+                for (int i = 0; i < items.Length-1; i+=2)
+                {
+                    radioStreams.Add(new DownloadRadioStream(items[i], items[i+1]));
+                }
+            }
+               
+            
+         
+          
+        
         
         }
 
@@ -103,6 +153,19 @@ namespace RadioSX.ViewModel
             url = "";
             radioPlayer.StartRadio(file);
             
+        }
+
+        internal void AddNewRadio()
+        {
+            radioStreams.Add(new DownloadRadioStream(newRadioURL, newRadioName));
+            newRadioURL = "";
+            newRadioName = "";
+            String data="";
+            foreach (var radiostream in radioStreams)
+            {
+                data += radiostream.StreamingUrl + ";" + radiostream.RadioName+";\n";
+            }
+            File.WriteAllLines("Radios\\Radios.txt", data.Split('\n'));
         }
     }
 }

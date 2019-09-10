@@ -76,6 +76,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AddRadioStream.xaml.cs">
+      <DependentUpon>AddRadioStream.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MyCopyCommand.cs" />
     <Compile Include="Overlay\DemoOverlaySettings.cs" />
     <Compile Include="RadioPlayer\RadioPlayer.cs" />
@@ -85,6 +88,10 @@
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="Overlay\WpfOverlayDemoExample.cs" />
+    <Page Include="AddRadioStream.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
