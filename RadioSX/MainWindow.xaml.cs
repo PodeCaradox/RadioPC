@@ -50,7 +50,22 @@ namespace RadioSX
             //thread.SetApartmentState(ApartmentState.STA);
             //thread.IsBackground = true;
             //thread.Start();
+            this.RadioStreamsListView.Loaded += new RoutedEventHandler(RadioStreamsListViewLoaded);
 
+         
+        }
+
+        private void RadioStreamsListViewLoaded(object sender, RoutedEventArgs e)
+        {
+            var view = CollectionViewSource.GetDefaultView(RadioStreamsListView.ItemsSource);
+            view.Filter = RadioStreamsListViewFilter;
+        }
+
+        private bool RadioStreamsListViewFilter(object item)
+        {
+            var stream = item as DownloadRadioStream;
+            if (stream == null) return true;
+            return stream.Show;
         }
 
 
@@ -180,8 +195,8 @@ namespace RadioSX
             var item = sender as MenuItem;
             if (item == null) return;
             _vm.DeleteRadio(item.Tag);
-            
-          
+            CollectionViewSource.GetDefaultView(RadioStreamsListView.ItemsSource).Refresh();
+
         }
     }
 }

@@ -18,80 +18,114 @@ namespace RadioSX
     internal class DownloadRadioStream : ViewModelBase
     {
         private static int id = 0;
-      
-        public DownloadRadioStream(string streamingUrl, string RadioName)
+
+        public DownloadRadioStream(string StreamingUrl, string RadioName) : this(StreamingUrl, RadioName, id++) { }
+
+        [JsonConstructor]
+        public DownloadRadioStream(string StreamingUrl, string RadioName,int ID,bool Record = true,bool Show = true)
         {
+            this.Show = Show;
             this.RadioName = RadioName;
-            this.streamingUrl = streamingUrl;
-            ID = id;
-            fileName = "Radios\\"+RadioName+".mp3";
-            id++;
-            if (File.Exists("Radios\\" + RadioName +".json"))
+            this.StreamingUrl = StreamingUrl;
+            this.Record = Record;
+            this.ID = ID;
+            if (!Show) return;
+
+            if (File.Exists("Radios\\" + RadioName + ".json"))
             {
                 var list = File.ReadAllText("Radios\\" + RadioName + ".json");
                 Songs = JsonConvert.DeserializeObject<ObservableCollection<Song>>(list);
                 if (Songs == null) Songs = new ObservableCollection<Song>();
             }
-           
-            Task.Factory.StartNew(StartRecording,TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(StartRecording, TaskCreationOptions.LongRunning);
+            if (id< ID)
+            {
+                id = ID;
+            }
         }
+
+        public static event EventHandler VariableChangedEvent = new EventHandler((e, a) => { });
+
 
         private ObservableCollection<Song> songs = new ObservableCollection<Song>();
 
+        [JsonIgnore]
         public ObservableCollection<Song> Songs
         {
             get { return songs; }
             set
             {
-
                 songs = value;
                 RaisePropertyChanged("Songs");
             }
         }
 
-        public string RadioName { get; set; }
+
 
         public int ID { get; set; }
+
+        public string RadioName { get; set; }
+
 
         private String streamingUrl;
 
         public String StreamingUrl
         {
             get { return streamingUrl; }
-            set { streamingUrl = value;
-               
+            set
+            {
+                streamingUrl = value;
+
             }
         }
+
+        private bool record;
+
+        public bool Record
+        {
+            get { return record; }
+            set
+            {
+
+                record = value;
+                RaisePropertyChanged("Record");
+                VariableChangedEvent(this, new EventArgs());
+            }
+        }
+
+        private bool show;
+
+        public bool Show
+        {
+            get { return show; }
+            set
+            {
+
+                show = value;
+                RaisePropertyChanged("Show");
+                VariableChangedEvent(this, new EventArgs());
+            }
+        }
+
+
+
+
 
 
 
         private String actualSong;
-
+        [JsonIgnore]
         public String ActualSong
         {
-            get { return actualSong; }
-            set { actualSong = value;
+            get { return "Actual Song: " + actualSong; }
+            set
+            {
+                actualSong = value;
                 RaisePropertyChanged("ActualSong");
             }
         }
+   
 
-
-
-        BufferedStream bufferedStream;
-
-        String fileName;
-        public bool IsRecording;
-        private bool stopped = true;
-
-        public delegate void RecordingStartedEventhandler();
-        public event RecordingStartedEventhandler RecordingStarted;
-
-        public delegate void RecordingStoppedEventhandler();
-        public event RecordingStoppedEventhandler RecordingStopped;
-
-        public delegate void RecordingProgressChangedEventhandler(object sender, RecordingEventArgs args);
-        public event RecordingProgressChangedEventhandler RecordingProgressChanged;
- 
         public void StartRecording()
         {
             if (String.IsNullOrEmpty(streamingUrl)) return;
@@ -113,8 +147,8 @@ namespace RadioSX
             request.Headers.Add("GET", "/" + " HTTP/1.0");
             request.UserAgent = "WinampMPEG/5.09";
 
-            stopped = false;
-            IsRecording = true;
+          
+           
             try
             {
                 response = (HttpWebResponse)request.GetResponse();
@@ -129,7 +163,7 @@ namespace RadioSX
             {
                 metaInt = Convert.ToInt32(dummy);
             }
-            
+
 
             String songBefore = "";
 
@@ -139,8 +173,15 @@ namespace RadioSX
                 socketStream = response.GetResponseStream();
 
                 // rip stream in an endless loop
-                while (true)
+                while (Show)
                 {
+                    if (!record&& byteOut!=null)
+                    {
+                        byteOut.Flush();
+                        byteOut.Close();
+                        byteOut = null;
+                    }
+
                     // read byteblock
                     int bufLen = socketStream.Read(buffer, 0, buffer.Length);
                     if (bufLen < 0)
@@ -160,8 +201,9 @@ namespace RadioSX
                                 // if songtitle changes, create a new file
                                 if (!metadataHeader.Equals(oldMetadataHeader))
                                 {
+                                    
                                     // flush and close old byteOut stream
-                                    if (byteOut != null)
+                                    if (record && byteOut != null)
                                     {
                                         byteOut.Flush();
                                         byteOut.Close();
@@ -171,7 +213,7 @@ namespace RadioSX
                                     if (!String.IsNullOrEmpty(songBefore))
                                     {
                                         // extract songtitle from metadata header. Trim was needed, because some stations don't trim the songtitle
-                                        
+
                                         Song songsearched = Songs.Where(x => x.Songname == songBefore).FirstOrDefault();
                                         if (songsearched == null)
                                         {
@@ -179,20 +221,21 @@ namespace RadioSX
                                             var items = new VideoSearch();
 
                                             var song = new Song();
-                                            
+
                                             song.Songname = songBefore;
-                                            song.SavedFile ="Radios\\"+ songBefore +".mp3";
+                                            song.SavedFile = "Radios\\" + songBefore + ".mp3";
                                             song.StartTime = 0;
                                             song.EndTime = 0;
                                             song.NumberPlayed = 1;
                                             song.ExportSong = false;
                                             song.YoutubeLink = items.SearchQuery(songBefore, 1).FirstOrDefault().Url; ;
-                                            Application.Current.Dispatcher.BeginInvoke(new Action(() => {
+                                            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                                            {
                                                 Songs.Add(song);
                                                 var convertedJson = JsonConvert.SerializeObject(Songs, Formatting.Indented);
                                                 File.WriteAllText("Radios\\" + RadioName + ".json", convertedJson);
                                             }));
-                                           
+
                                         }
                                         else
                                         {
@@ -205,10 +248,10 @@ namespace RadioSX
 
                                     if (String.IsNullOrEmpty(fileName)) fileName = RadioName;
                                     // write new songtitle to console for information
-                                   
+
 
                                     // create new file with the songtitle from header and set a stream on this file
-                                    byteOut = createNewFile("Radios\\", fileName);
+                                    if (record) byteOut = createNewFile("Radios\\", fileName);
 
                                     // save new header to 'oldMetadataHeader' string, to compare if there's a new song starting
                                     oldMetadataHeader = metadataHeader;
@@ -220,26 +263,27 @@ namespace RadioSX
                         {
                             if (count++ < metaInt) // write bytes to filestream
                             {
-                                if (byteOut != null) // as long as we don't have a songtitle, we don't open a new file and don't write any bytes
+                                if (record && byteOut != null) // as long as we don't have a songtitle, we don't open a new file and don't write any bytes
                                 {
+
                                     byteOut.Write(buffer, i, 1);
-                                   
-                                        byteOut.Flush();
-                 
-                                    
-                                   
+
+                                    byteOut.Flush();
+
+
+
                                 }
                             }
                             else // get headerlength from lengthbyte and multiply by 16 to get correct headerlength
                             {
                                 metadataLength = Convert.ToInt32(buffer[i]) * 16;
                                 count = 0;
-                              
+
                             }
                         }
                     }
 
-   
+
                 }
             }
             catch (Exception ex)
@@ -283,35 +327,25 @@ namespace RadioSX
                     Directory.CreateDirectory(destPath);
 
                 // create new file
-                
-                    return File.Create(destPath + filename + ".mp3");
-              
+                if (File.Exists(destPath + filename + ".mp3"))
+                {
+                    int i = 1;
+                    while (File.Exists(destPath + filename + i + ".mp3"))
+                    {
+                        i++;
+                    }
+                    return File.Create(destPath + filename + i + ".mp3");
+                }
+
+
+
+                return File.Create(destPath + filename + ".mp3");
+
             }
             catch (IOException)
             {
                 return null;
             }
-        }
-
-        public void StopRecording()
-        {
-            stopped = true;
-            IsRecording = false;
-
-            if (RecordingStopped != null)
-            {
-                RecordingStopped();
-            }
-        }
-    }
-
-    public class RecordingEventArgs : EventArgs
-    {
-        public long StreamLength { get; set; }
-
-        public RecordingEventArgs(long streamLength)
-        {
-            this.StreamLength = streamLength;
         }
     }
 }

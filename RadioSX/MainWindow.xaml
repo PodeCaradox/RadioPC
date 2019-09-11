@@ -39,7 +39,7 @@
 
         <TextBlock Grid.Row="1" Grid.Column="0" Width="300" Text="{Binding ActualRadioStream.ActualSong}" Margin="10"></TextBlock>
         <Slider Margin="10" IsMoveToPointEnabled="True" TickFrequency="1"  Grid.Row="1" Grid.Column="1" Maximum="100" Minimum="0" Value="{Binding Volume}"></Slider>
-        <ListView Margin="10" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{Binding RadioStreams}" >
+        <ListView x:Name="RadioStreamsListView"  Margin="10" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{Binding RadioStreams}" >
 
 
             <ListView.ItemContainerStyle>
@@ -68,6 +68,7 @@
                         <Button.ContextMenu>
                             <ContextMenu x:Name="connectionButtonContext">
                                 <MenuItem Header="Remove" Click="RemoveRadioClick" Tag="{Binding ID}"/>
+                                <CheckBox Content="Record" IsChecked="{Binding Record}"/>
                             </ContextMenu>
                         </Button.ContextMenu>
                     </Button>
