@@ -45,7 +45,7 @@ namespace RadioSX
             _vm.LoadRadioStreams();
        
 
-            ServicePointManager.DefaultConnectionLimit = 6;
+            ServicePointManager.DefaultConnectionLimit = 16;
             //Thread thread = new Thread(timeout => Update());
             //thread.SetApartmentState(ApartmentState.STA);
             //thread.IsBackground = true;
@@ -173,6 +173,15 @@ namespace RadioSX
                 _vm.AddNewRadio();
             }
 
+        }
+
+        private void RemoveRadioClick(object sender, RoutedEventArgs e)
+        {
+            var item = sender as MenuItem;
+            if (item == null) return;
+            _vm.DeleteRadio(item.Tag);
+            
+          
         }
     }
 }

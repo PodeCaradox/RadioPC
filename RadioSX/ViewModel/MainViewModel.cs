@@ -160,12 +160,27 @@ namespace RadioSX.ViewModel
             radioStreams.Add(new DownloadRadioStream(newRadioURL, newRadioName));
             newRadioURL = "";
             newRadioName = "";
-            String data="";
+            SafeRadios();
+            
+        }
+
+        private void SafeRadios()
+        {
+            String data = "";
             foreach (var radiostream in radioStreams)
             {
-                data += radiostream.StreamingUrl + ";" + radiostream.RadioName+";\n";
+                data += radiostream.StreamingUrl + ";" + radiostream.RadioName + ";\n";
             }
             File.WriteAllLines("Radios\\Radios.txt", data.Split('\n'));
+        }
+
+        internal void DeleteRadio(object tag)
+        {
+            int id = int.Parse(tag.ToString());
+            var radio = radioStreams.Where(x => x.ID == id).FirstOrDefault();
+            if (radio == null) return;
+            radioStreams.Remove(radio);
+            SafeRadios();
         }
     }
 }

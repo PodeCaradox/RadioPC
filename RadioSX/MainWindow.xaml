@@ -64,7 +64,13 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
 
-                    <Button Margin="0,0,10,0" x:Name="RadioButton" Content="{Binding RadioName}" Tag="{Binding ID}" Click="RadioButton_Click"/>
+                    <Button Margin="0,0,10,0" x:Name="RadioButton" Content="{Binding RadioName}" Tag="{Binding ID}" Click="RadioButton_Click">
+                        <Button.ContextMenu>
+                            <ContextMenu x:Name="connectionButtonContext">
+                                <MenuItem Header="Remove" Click="RemoveRadioClick" Tag="{Binding ID}"/>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
 
 
                 </DataTemplate>
