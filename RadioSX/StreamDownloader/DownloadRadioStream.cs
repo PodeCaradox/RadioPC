@@ -292,7 +292,7 @@ namespace RadioSX
                             if (!String.IsNullOrEmpty(SongNamesSearchForString))
                                 if (stopwatch.ElapsedMilliseconds >= 20000 || String.IsNullOrEmpty(actualSong))//1min = 60000
                                 {
-                                    var result = new WebClient().DownloadString(SongNamesUrl).Replace("\n",String.Empty).Replace("\r", String.Empty);
+                                    var result = new WebClient().DownloadString(SongNamesUrl).Replace("\n",String.Empty).Replace("\r", String.Empty).Replace("\t", ""); ;
                                     result = WebUtility.HtmlDecode(result);
                                     String[] spearator = { "|####|" };
                                     String[] searchStrings = SongNamesSearchForString.Replace("\n", String.Empty).Replace("\r", String.Empty).Split(spearator,StringSplitOptions.RemoveEmptyEntries);

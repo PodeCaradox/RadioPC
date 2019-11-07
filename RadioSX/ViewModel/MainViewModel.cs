@@ -125,6 +125,12 @@ namespace RadioSX.ViewModel
         public void LoadRadioStreams()
         {
             String list="";
+
+            if (!Directory.Exists("Radios"))
+            {
+                Directory.CreateDirectory("Radios");
+            }
+
             if (File.Exists("Radios\\Radios.txt"))
             {
 
@@ -132,6 +138,7 @@ namespace RadioSX.ViewModel
 
 
             }
+           
        
             RadioStreams = new ObservableCollection<DownloadRadioStream>();
             if (String.IsNullOrEmpty(list))
@@ -139,10 +146,10 @@ namespace RadioSX.ViewModel
                 RadioStreams.Add(new DownloadRadioStream("https://de-hz-fal-stream02.rautemusik.fm/charthits", "Chart Hits",null,null,false));
                 RadioStreams.Add(new DownloadRadioStream("http://de-hz-fal-stream01.rautemusik.fm/top40", "Top 40", null, null, false));
                 RadioStreams.Add(new DownloadRadioStream("http://main-high.rautemusik.fm/stream.mp3", "Main", null, null, false));
-                RadioStreams.Add(new DownloadRadioStream("http://breakz-high.rautemusik.fm/stream.mp3", "BreakZ.FM", null, null, false));
+                RadioStreams.Add(new DownloadRadioStream("http://breakz-high.rautemusik.fm/stream.mp3", "BreakZ.FM", "<div class=\"right info\"><p class=\"title\"", "https://www.rautemusik.fm/breakz/#live", false));
                 RadioStreams.Add(new DownloadRadioStream("http://weihnachten-high.rautemusik.fm/stream.mp3", "Weinachten", null, null, false));
                 RadioStreams.Add(new DownloadRadioStream("http://lw3.mp3.tb-group.fm/tb.mp3", "Technobase.fm",  "<table class=\"rc_table_detail\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tbody><tr><th style=\"width:100%\"><a href=\"\r\n|####|\r\n<table class=\"rc_table_detail\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tbody><tr><th style=\"width:100%\"", "https://www.technobase.fm/tracklist/", false));
-
+                SafeRadios();
             }
             else
             {

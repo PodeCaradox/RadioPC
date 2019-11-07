@@ -1,4 +1,5 @@
-﻿using RadioSX.ViewModel;
+﻿using Newtonsoft.Json;
+using RadioSX.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,8 @@ namespace RadioSX
         }
 
         private bool exportSong;
+
+        [JsonIgnore]
         public bool ExportSong
         {
             get { return exportSong; }
