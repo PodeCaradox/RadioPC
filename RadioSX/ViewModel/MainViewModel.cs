@@ -59,6 +59,8 @@ namespace RadioSX.ViewModel
             }
         }
 
+
+
         private String newRadioName;
         public String NewRadioName
         {
@@ -67,6 +69,40 @@ namespace RadioSX.ViewModel
             {
                 newRadioName = value;
                 RaisePropertyChanged("NewRadioName");
+            }
+        }
+
+        
+         private bool record = true;
+        public bool Record
+        {
+            get { return record; }
+            set
+            {
+                record = value;
+                RaisePropertyChanged("Record");
+            }
+        }
+
+        private String newRadioSongNamesURL;
+        public String NewRadioSongNamesURL
+        {
+            get { return newRadioSongNamesURL; }
+            set
+            {
+                newRadioSongNamesURL = value;
+                RaisePropertyChanged("NewRadioSongNamesURL");
+            }
+        }
+
+        private String songNamesSearchForString;
+        public String SongNamesSearchForString
+        {
+            get { return songNamesSearchForString; }
+            set
+            {
+                songNamesSearchForString = value;
+                RaisePropertyChanged("SongNamesSearchForString");
             }
         }
 
@@ -85,8 +121,6 @@ namespace RadioSX.ViewModel
 
         private RadioPlayer radioPlayer;
 
-                private String actualSong;
-
     
         public void LoadRadioStreams()
         {
@@ -102,12 +136,12 @@ namespace RadioSX.ViewModel
             RadioStreams = new ObservableCollection<DownloadRadioStream>();
             if (String.IsNullOrEmpty(list))
             {
-                RadioStreams.Add(new DownloadRadioStream("https://de-hz-fal-stream02.rautemusik.fm/charthits", "Chart Hits"));
-                RadioStreams.Add(new DownloadRadioStream("http://de-hz-fal-stream01.rautemusik.fm/top40", "Top 40"));
-                RadioStreams.Add(new DownloadRadioStream("http://main-high.rautemusik.fm/stream.mp3", "Main"));
-                RadioStreams.Add(new DownloadRadioStream("http://breakz-high.rautemusik.fm/stream.mp3", "BreakZ.FM"));
-                RadioStreams.Add(new DownloadRadioStream("http://weihnachten-high.rautemusik.fm/stream.mp3", "Weinachten"));
-                RadioStreams.Add(new DownloadRadioStream("http://lw3.mp3.tb-group.fm/tb.mp3", "Technobase.fm"));
+                RadioStreams.Add(new DownloadRadioStream("https://de-hz-fal-stream02.rautemusik.fm/charthits", "Chart Hits",null,null,false));
+                RadioStreams.Add(new DownloadRadioStream("http://de-hz-fal-stream01.rautemusik.fm/top40", "Top 40", null, null, false));
+                RadioStreams.Add(new DownloadRadioStream("http://main-high.rautemusik.fm/stream.mp3", "Main", null, null, false));
+                RadioStreams.Add(new DownloadRadioStream("http://breakz-high.rautemusik.fm/stream.mp3", "BreakZ.FM", null, null, false));
+                RadioStreams.Add(new DownloadRadioStream("http://weihnachten-high.rautemusik.fm/stream.mp3", "Weinachten", null, null, false));
+                RadioStreams.Add(new DownloadRadioStream("http://lw3.mp3.tb-group.fm/tb.mp3", "Technobase.fm",  "<table class=\"rc_table_detail\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tbody><tr><th style=\"width:100%\"><a href=\"\r\n|####|\r\n<table class=\"rc_table_detail\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tbody><tr><th style=\"width:100%\"", "https://www.technobase.fm/tracklist/", false));
 
             }
             else
@@ -155,9 +189,12 @@ namespace RadioSX.ViewModel
 
         internal void AddNewRadio()
         {
-            radioStreams.Add(new DownloadRadioStream(newRadioURL, newRadioName));
+            radioStreams.Add(new DownloadRadioStream(newRadioURL, newRadioName, SongNamesSearchForString, NewRadioSongNamesURL,Record));
             newRadioURL = "";
             newRadioName = "";
+            SongNamesSearchForString = "";
+            NewRadioSongNamesURL = "";
+            Record = true;
             SafeRadios();
             
         }
@@ -173,7 +210,9 @@ namespace RadioSX.ViewModel
             int id = int.Parse(tag.ToString());
             var radio = radioStreams.Where(x => x.ID == id).FirstOrDefault();
             if (radio == null) return;
+            radio.Active = false;
             radio.Show = false;
+            SafeRadios();
         }
     }
 }

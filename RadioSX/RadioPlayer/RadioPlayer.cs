@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RadioSX
 {
@@ -46,9 +47,18 @@ namespace RadioSX
         String file="";
         public void StartRadio(String file)
         {
-            this.url = "";
-            this.file = file;
-            StartRadioPlayerNew();
+            if (File.Exists(file))
+            {
+                this.url = "";
+                this.file = file;
+
+                StartRadioPlayerNew();
+            }
+            else
+            {
+                MessageBox.Show("File not found: " + file, "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
         }
 
         private void StartRadioPlayerNew()
@@ -148,6 +158,7 @@ namespace RadioSX
             }
             else
             {
+                
                     using (var responseStream = File.OpenRead(file))
                     {
                         PlayStream(responseStream, cancelToken, buffer);
@@ -155,8 +166,11 @@ namespace RadioSX
                         Console.WriteLine("Exiting");
                         // was doing this in a finally block, but for some reason
                         // we are hanging on response stream .Dispose so never get there
-                   
+
                     }
+                
+               
+                    
             }
            
 

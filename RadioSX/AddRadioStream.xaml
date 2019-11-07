@@ -5,30 +5,42 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RadioSX"
         mc:Ignorable="d"
-        Width="400"
-        Height="200"
+        Width="500"
+        Height="330"
       
         Title="AddRadioStream" >
     <Grid>
         <Grid.ColumnDefinitions>
-           
+
             <ColumnDefinition Width="Auto"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            
+            <ColumnDefinition/>
+
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
 
         </Grid.RowDefinitions>
-        <Label Margin="10" Width="150" Grid.Row="0" Grid.Column="0">Radio Name</Label>
+        <Label Margin="10" Grid.Row="0" Grid.Column="0">Radio Name:</Label>
         <TextBox Margin="10" x:Name="Name" Grid.Row="0" Grid.Column="1" Text="{Binding NewRadioName,Mode=TwoWay}"/>
 
-        <Label Margin="10" Width="150" Grid.Row="1" Grid.Column="0">Radio Url</Label>
+        <Label Margin="10" Grid.Row="1" Grid.Column="0">Radio Url:</Label>
         <TextBox Margin="10" x:Name="Url" Grid.Row="1" Grid.Column="1" Text="{Binding NewRadioURL,Mode=TwoWay}"/>
 
-        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+        <Label Margin="10" Grid.Row="2" Grid.Column="0">Get Song Names from Url:</Label>
+        <TextBox Margin="10" x:Name="SongNamesUrl" Grid.Row="2" Grid.Column="1" Text="{Binding NewRadioSongNamesURL,Mode=TwoWay}"/>
+
+        <TextBlock Margin="10" TextWrapping="WrapWithOverflow" Grid.Row="3" Grid.Column="0" >Search for String:<LineBreak/>(separate search strings with |####|)</TextBlock>
+        <TextBox Margin="10" x:Name="SearchForString" Grid.Row="3" Grid.Column="1" Text="{Binding SongNamesSearchForString,Mode=TwoWay}" AcceptsReturn="True" TextWrapping="Wrap"/>
+
+        <Label Margin="10" Grid.Row="4" Grid.Column="0">Record:</Label>
+        <CheckBox Margin="10" Grid.Row="4" Grid.Column="1" IsChecked="{Binding Record}"></CheckBox>
+
+        <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -37,11 +49,11 @@
             <Button Margin="10" Grid.Column="0" x:Name="Add"  Click="Button_Click" HorizontalAlignment="Stretch">Add</Button>
             <Button Margin="10" Grid.Column="1" x:Name="Cancel" Click="Button_Click" HorizontalAlignment="Stretch">Cancel</Button>
         </Grid>
-     
+
 
     </Grid>
-  
-           
-           
-       
+
+
+
+
 </Window>
